@@ -34,8 +34,6 @@ colcon build --packages-select mosh_b_description && source install/setup.bash
 - `urdf/materials.xacro`: the named colours.
 - `urdf/original_files/mosh_b.urdf.orig`: the original sw2urdf / URDF Forge export, kept for reference.
 - `config/wheels/drive.yaml`: wheel separation, radius, width and mass. The xacro reads this file, so keep the controller config in sync with it.
-- `urdf/mosh_b.jazzy-harmonic.urdf`: the original URDF Forge export. It uses different link and joint names and is kept for reference only.
-- `sdf/mosh_b/`: standalone SDF model.
 - `meshes/`: binary STL meshes, in metres.
 - `config/controllers.yaml`: ros2_control controllers. `config/gz_bridge.yaml`: ROS <-> Gazebo topics. (Both still need updating for the new joint names.)
 - `worlds/`: Gazebo worlds. `empty.sdf` is the default. `room`, `maze`, `office`, `tb3_sandbox`, `depot` and `warehouse` came from the horizon_robot project. `depot` and `warehouse` download models from Gazebo Fuel the first time they load, so they need internet then.
