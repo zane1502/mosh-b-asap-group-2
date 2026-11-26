@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!--Drive wheel: CAD mesh visual, cylinder collision, solid-cylinder inertia from the yaml mass-->
+  <xacro:macro name="drive_wheel" params="side y mesh vis_xyz vis_rpy">
+    <link name="${side}_wheel_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${wheel_mass}"/>
+        <inertia ixx="${wheel_mass * (3 * wheel_radius**2 + wheel_width**2) / 12}" iyy="${0.5 * wheel_mass * wheel_radius**2}" izz="${wheel_mass * (3 * wheel_radius**2 + wheel_width**2) / 12}" ixy="0.0" ixz="0.0" iyz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="${vis_xyz}" rpy="${vis_rpy}"/>
+        <geometry>
+          <mesh filename="file://$(find mosh_b_description)/meshes/${mesh}" scale="1 1 1"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="base_${side}_wheel_joint" type="continuous">
+      <origin xyz="0 ${y} 0" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="${side}_wheel_link"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:drive_wheel side="left"  y="${wheel_separation / 2}"  mesh="left_motor_wheel.stl" vis_xyz="-0.020429 -0.014602 0" vis_rpy="3.141589 0.214303 -0.008401"/>
+  <xacro:drive_wheel side="right" y="${-wheel_separation / 2}" mesh="right_wheel_Link.stl" vis_xyz="-0.021560 0.011750 0"  vis_rpy="3.141589 0.214300 3.133151"/>
+
+</robot>

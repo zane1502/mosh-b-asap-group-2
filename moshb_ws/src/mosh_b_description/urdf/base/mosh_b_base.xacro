@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!--One mesh visual. The static parts (motors, brackets, electronics) do not move, so they are visuals on base_link, not separate links-->
+  <xacro:macro name="base_visual" params="name mesh xyz rpy material">
+    <visual name="${name}">
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+      <geometry>
+        <mesh filename="file://$(find mosh_b_description)/meshes/${mesh}" scale="1 1 1"/>
+      </geometry>
+      <material name="${material}"/>
+    </visual>
+  </xacro:macro>
+
+  <link name="base_footprint"/>
+
+  <!--base_link sits midway between the two drive wheels, at axle height. The caster is at the rear-->
+  <link name="base_link">
+    <!--Combined inertial of all the parts below-->
+    <inertial>
+      <origin xyz="-0.081509 0.001653 0.054794" rpy="0 0 0"/>
+      <mass value="0.74334"/>
+      <inertia ixx="2.348e-03" iyy="5.247e-03" izz="4.641e-03" ixy="-4.2e-06" ixz="3.007e-04" iyz="-5.55e-05"/>
+    </inertial>
+
+    <xacro:base_visual name="drive_base"     mesh="drive_base.stl"          xyz="-0.169231 -0.001299 -0.032500" rpy="0 0 -1.5708"         material="black"/>
+    <xacro:base_visual name="left_motor"     mesh="left_motor_Link.stl"     xyz="-0.020500 0.057072 0.007000"   rpy="-1.5708 0 -0.0084"   material="grey"/>
+    <xacro:base_visual name="right_motor"    mesh="right_motor_Link.stl"    xyz="-0.021488 -0.059924 0.007000"  rpy="-1.570796 0 3.133151" material="grey"/>
+    <xacro:base_visual name="left_bracket"   mesh="left_bracket_Link.stl"   xyz="-0.000770 0.009571 -0.019825"  rpy="1.5708 0 3.133185"   material="purple"/>
+    <xacro:base_visual name="right_bracket"  mesh="right_bracket_Link.stl"  xyz="-0.041311 -0.012422 -0.019825" rpy="1.5708 0 -0.0084"    material="purple"/>
+    <xacro:base_visual name="caster_frame"   mesh="castor_frame_Link.stl"   xyz="-0.169231 -0.001299 -0.032500" rpy="3.141585 0 1.5625"   material="white"/>
+    <xacro:base_visual name="raspberry_pi"   mesh="raspberry_pi_Link.stl"   xyz="-0.139133 0.018072 0.102870"   rpy="1.5708 0 -0.0084"    material="orange"/>
+    <xacro:base_visual name="l298n"          mesh="l298n_Link.stl"          xyz="-0.009880 0.000989 0.046329"   rpy="1.5708 0 -3.1406"    material="red"/>
+    <xacro:base_visual name="buck_converter" mesh="buck_converter_Link.stl" xyz="-0.056470 0.023242 0.068970"   rpy="1.5708 0 -3.1406"    material="yellow"/>
+
+    <!--Chassis bounding box-->
+    <collision>
+      <origin xyz="-0.08131 0 0.05862" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.211 0.117 0.150"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+  </joint>
+
+</robot>

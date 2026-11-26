@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!--lidar_link faces +x like base_link (the CAD frame faced backwards); the mesh is turned to match-->
+  <link name="lidar_link">
+    <inertial>
+      <origin xyz="0 0 -0.013444" rpy="0 0 0"/>
+      <mass value="0.02464"/>
+      <inertia ixx="7.80e-06" iyy="7.59e-06" izz="1.365e-05" ixy="0.0" ixz="0.0" iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 -0.013858" rpy="0 0 3.121985"/>
+      <geometry>
+        <mesh filename="file://$(find mosh_b_description)/meshes/lidar_Link.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="light_blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.01736" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.032" length="0.035"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <origin xyz="-0.067920 0 0.147478" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+  </joint>
+
+  <gazebo reference="lidar_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <frame_id>lidar_link</frame_id>
+      <topic>scan</topic>
+      <pose>0 0 0 0 0 0</pose>
+      <update_rate>10</update_rate>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <min_angle>${-pi}</min_angle>
+            <max_angle>${pi}</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.12</min>
+          <max>12.0</max>
+        </range>
+      </lidar>
+    </sensor>
+  </gazebo>
+</robot>

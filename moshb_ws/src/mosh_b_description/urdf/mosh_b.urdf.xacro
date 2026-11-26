@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mosh_b">
+  <xacro:arg name="drive" default="ros2_control"/>
+  <xacro:arg name="controllers_file" default=""/>
+  <xacro:arg name="ground_truth" default="false"/>
+
+  <!--Turning args to properties-->
+  <xacro:property name="drive" value="$(arg drive)"/>
+  <xacro:property name="drive_check" value="${xacro.fatal('FATAL: drive must be ros2_control or gz. Received: ' + drive) if drive not in ['ros2_control', 'gz'] else ''}" lazy_eval="false"/>
+  <xacro:property name="ground_truth" value="$(arg ground_truth)"/>
+
+  <!--Wheel separation and radius come from the same yaml the controller uses-->
+  <xacro:property name="wheel_config" value="${xacro.load_yaml('$(find mosh_b_description)/config/wheels/drive.yaml')}" lazy_eval="false"/>
+  <xacro:property name="wheel_separation" value="${wheel_config['diff_drive_controller']['ros__parameters']['wheel_separation']}"/>
+  <xacro:property name="wheel_radius" value="${wheel_config['diff_drive_controller']['ros__parameters']['wheel_radius']}"/>
+  <xacro:property name="wheel_width" value="${wheel_config['wheel_params']['ros__parameters']['wheel_width']}"/>
+  <xacro:property name="wheel_mass" value="${wheel_config['wheel_params']['ros__parameters']['wheel_mass']}"/>
+
+  <!--Include Files-->
+  <xacro:include filename="$(find mosh_b_description)/urdf/materials.xacro"/>
+  <xacro:include filename="$(find mosh_b_description)/urdf/base/mosh_b_base.xacro"/>
+  <xacro:include filename="$(find mosh_b_description)/urdf/wheels/mosh_b_wheels.xacro"/>
+  <xacro:include filename="$(find mosh_b_description)/urdf/wheels/mosh_b_caster.xacro"/>
+  <xacro:include filename="$(find mosh_b_description)/urdf/sensors/mosh_b_lidar.xacro"/>
+  <xacro:include filename="$(find mosh_b_description)/urdf/gazebo/mosh_b.gazebo.xacro"/>
+
+  <!--Ros_Control Option-->
+  <xacro:if value="${drive == 'ros2_control'}">
+    <xacro:include filename="$(find mosh_b_description)/urdf/ros2_control/mosh_b_ros2_control.xacro"/>
+  </xacro:if>
+
+</robot>

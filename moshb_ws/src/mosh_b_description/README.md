@@ -17,25 +17,37 @@ colcon build --packages-select mosh_b_description && source install/setup.bash
 
 `ros2 launch mosh_b_description display.launch.py` shows the model in RViz with joint sliders.
 
-`ros2 launch mosh_b_description gazebo.launch.py` spawns the robot in Gazebo. Target: ROS 2 Lyrical · Gazebo Jetty.
+`gazebo.launch.py` is being rewritten for the new xacro model; it still points at the old `urdf/mosh_b.urdf` and will not start until that is done. Target: ROS 2 Lyrical · Gazebo Jetty.
 
-Pick a world with `world:=<file>`, for example `ros2 launch mosh_b_description gazebo.launch.py world:=room.sdf`.
 
 ## Layout
 
-- `urdf/mosh_b.urdf`: the source of truth, exported from SolidWorks with sw2urdf. Both launch files load this file.
+- `urdf/mosh_b.urdf.xacro`: top-level model. Both launch files should load this. Args:
+  - `drive:=ros2_control|gz` (default `ros2_control`): `ros2_control` adds the gz_ros2_control hardware for the two wheel joints; `gz` uses Gazebo's built-in DiffDrive system instead.
+  - `controllers_file:=<path>`: controller yaml handed to gz_ros2_control.
+  - `ground_truth:=true|false`: adds a Gazebo odometry publisher on `/ground_truth/odom`.
+- `urdf/base/`: `base_footprint` and `base_link`. The motors, brackets, Raspberry Pi, L298N and buck converter don't move, so they are extra visuals on `base_link` with one combined inertial, not separate links.
+- `urdf/wheels/`: the two drive wheels (`base_left_wheel_joint`, `base_right_wheel_joint`) and the rear ball caster (fixed, sphere collision).
+- `urdf/sensors/`: `lidar_link` plus its `gpu_lidar` sensor (publishes `scan`).
+- `urdf/gazebo/`: wheel and caster friction, the optional DiffDrive and ground-truth plugins.
+- `urdf/ros2_control/`: `<ros2_control>` block and the gz_ros2_control plugin.
+- `urdf/materials.xacro`: the named colours.
+- `urdf/original_files/mosh_b.urdf.orig`: the original sw2urdf / URDF Forge export, kept for reference.
+- `config/wheels/drive.yaml`: wheel separation, radius, width and mass. The xacro reads this file, so keep the controller config in sync with it.
 - `urdf/mosh_b.jazzy-harmonic.urdf`: the original URDF Forge export. It uses different link and joint names and is kept for reference only.
 - `sdf/mosh_b/`: standalone SDF model.
-- `meshes/`: binary STL meshes.
-- `config/controllers.yaml`: ros2_control controllers. `config/gz_bridge.yaml`: ROS <-> Gazebo topics.
+- `meshes/`: binary STL meshes, in metres.
+- `config/controllers.yaml`: ros2_control controllers. `config/gz_bridge.yaml`: ROS <-> Gazebo topics. (Both still need updating for the new joint names.)
 - `worlds/`: Gazebo worlds. `empty.sdf` is the default. `room`, `maze`, `office`, `tb3_sandbox`, `depot` and `warehouse` came from the horizon_robot project. `depot` and `warehouse` download models from Gazebo Fuel the first time they load, so they need internet then.
+
+### Frames
+
+`base_footprint` (ground) -> `base_link` (midway between the drive wheels, at axle height, x forward) -> `left_wheel_link`, `right_wheel_link`, `caster_link`, `lidar_link`. All frames follow REP 103: x forward, y left, z up.
 
 ## Notes
 
-- Mesh URIs use `package://mosh_b_description/...`. The launch files add the install share
-  directory to the simulator's resource path so Gazebo can resolve them.
-- Inertias were integrated over the mesh geometry for a solid of uniform density. Check any link
-  the editor flagged as not watertight.
+- Mesh URIs use `file://$(find mosh_b_description)/meshes/...`, so they resolve in RViz and Gazebo without setting a resource path.
+- Inertias come from the CAD export, except `drive_base`: its exported centre of mass was 17 cm outside the part, so it was recomputed from the mesh (uniform density, same mass). Wheel and caster inertias use the solid cylinder/sphere formulas.
 
 
 ## things added/ chenged by transcendent

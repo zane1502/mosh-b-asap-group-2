@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!--15 mm ball caster at the rear. Fixed joint + sphere collision; it slides (see gazebo xacro)-->
+  <xacro:property name="caster_radius" value="0.0075"/>
+  <xacro:property name="caster_mass" value="0.00177"/>
+
+  <link name="caster_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${caster_mass}"/>
+      <inertia ixx="${0.4 * caster_mass * caster_radius**2}" iyy="${0.4 * caster_mass * caster_radius**2}" izz="${0.4 * caster_mass * caster_radius**2}" ixy="0.0" ixz="0.0" iyz="0.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 -0.0075" rpy="1.5708 0 -0.039466"/>
+      <geometry>
+        <mesh filename="file://$(find mosh_b_description)/meshes/castor_wheel_Link.stl" scale="1 1 1"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="${caster_radius}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!--z keeps the ball on the ground for whatever wheel_radius the yaml sets-->
+  <joint name="caster_joint" type="fixed">
+    <origin xyz="-0.169225 -0.001297 ${caster_radius - wheel_radius}" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="caster_link"/>
+  </joint>
+
+</robot>

@@ -10,7 +10,7 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     share = get_package_share_directory('mosh_b_description')
-    xacro_file = os.path.join(share, 'urdf', 'mosh_b.urdf')
+    xacro_file = os.path.join(share, 'urdf', 'mosh_b.urdf.xacro')
     robot_description = ParameterValue(Command(['xacro ', xacro_file]), value_type=str)
     return LaunchDescription([
         Node(package='robot_state_publisher', executable='robot_state_publisher',

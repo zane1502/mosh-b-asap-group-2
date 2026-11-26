@@ -1,0 +1,10 @@
+diff_drive_controller:
+  ros__parameters:
+
+    wheel_separation: 0.16035
+    wheel_radius: 0.0325
+
+wheel_params:
+  ros__parameters:
+    wheel_width: 0.0265
+    wheel_mass: 0.04754
